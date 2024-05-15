@@ -36,10 +36,16 @@ module.exports = async app => {
           return res.json();
         }).then(async data => {
           if (data.status === 200) {
-
             resolve(data.data);
           } else {
-            reject(data.message);
+            if (data.message.indexOf('token expired') > -1) {
+              const result = await commonCall('http://172.16.251.75:8090/nms/api/admin/login?loginName=ceshi06&pwd=023e1e2ab4a2746d28cd3688e867825f', 'post', true);
+              token = result.token;
+              commonCall(url, method);
+            } else {
+              reject(data.message);
+            }
+
           }
 
         });
